@@ -1,24 +1,23 @@
-use actix_web::{get, App, HttpResponse, HttpServer, Responder};
-use serde::Serialize;
+use actix_web::{App, HttpServer};
+use modules::routes;
 
-#[derive(Serialize)]
-struct MyResponse {
-    data: String,
-}
-
-#[get("/get")]
-async fn get_handler() -> impl Responder {
-    let response = MyResponse {
-        data: "Hello, World!".to_string(),
-    };
-    HttpResponse::Ok().json(response)
+mod modules {
+    pub mod controllers {
+        pub mod post;
+        pub mod get;
+    }
+    pub mod routes;
+    pub mod services {
+        pub mod post;
+        pub mod get;
+    }
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
-            .service(get_handler)
+            .configure(routes::config)
     })
     .bind("127.0.0.1:9000")?
     .run()
